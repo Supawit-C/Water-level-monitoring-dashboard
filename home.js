@@ -21,18 +21,18 @@ function getWeatherText(code) {
     if ([51, 53, 55, 56, 57].includes(code)) return 'ฝนปรอย';
     if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return 'มีโอกาสเกิดฝน';
     if ([71, 73, 75, 77, 85, 86].includes(code)) return 'หิมะ';
-    if ([95, 96, 99].includes(code)) return 'ฝนตกหนัก/ฟ้าผ่า';
+    if ([95, 96, 99].includes(code)) return 'ฝนตกหนัก';
     return 'ไม่ทราบสภาพอากาศ';
 }
 function getWeatherIcon(code) {
     if ([0].includes(code)) return 'fa-sun text-warning';
     if ([1, 2].includes(code)) return 'fa-cloud-sun text-info';
-    if ([3].includes(code)) return 'fa-cloud text-secondary';
+    if ([3].includes(code)) return 'fa-cloud text-light-gray';
     if ([45, 48].includes(code)) return 'fa-smog text-secondary';
     if ([51, 53, 55, 56, 57].includes(code)) return 'fa-cloud-rain text-info';
     if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return 'fa-cloud-showers-heavy text-primary';
     if ([71, 73, 75, 77, 85, 86].includes(code)) return 'fa-snowflake text-primary';
-    if ([95, 96, 99].includes(code)) return 'fa-bolt text-danger';
+    if ([95, 96, 99].includes(code)) return 'fa-bolt text-warning';
     return 'fa-question-circle text-muted';
 }
 
@@ -67,6 +67,18 @@ const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRCWZtREOAx7TXhy
 // เก็บ Instance ของกราฟไว้ข้างนอกเพื่อใช้ทำลาย (Destroy) ก่อนสร้างใหม่
 let waterChartInstance = null;
 
+function updateWaterCircleColor(level) {
+    const waterCircle = document.querySelector('.water-circle');
+    if (!waterCircle) return;
+    if (level > 2.0) {
+        waterCircle.style.background = 'radial-gradient(circle, #EE0E0E 27%, #F54040 100%)';
+    } else if (level > 1.5) {
+        waterCircle.style.background = 'radial-gradient(circle, #EDDE0F 27%, #F1D81E 100%)';
+    } else {
+        waterCircle.style.background = 'radial-gradient(circle, #4ade80 0%, #22c55e 100%)';
+    }
+}
+
 async function updateDashboard() {
     try {
         const response = await fetch(csvUrl);
@@ -98,6 +110,22 @@ async function updateDashboard() {
         document.getElementById('last-update').innerText = `วันที่ ${dateStr} | เวลาล่าสุด ${lastUpdateTime}`;
         if (document.getElementById('avg-level')) document.getElementById('avg-level').innerText = avgVal.toFixed(2);
         if (document.getElementById('max-level')) document.getElementById('max-level').innerText = maxVal.toFixed(2);
+        updateWaterCircleColor(latestWaterLevel);
+        // เพิ่มการเปลี่ยนข้อความสถานะ
+        const statusText = document.getElementById('status-text');
+        if (latestWaterLevel > 2.0) {
+            statusText.innerText = 'อันตราย';
+            statusText.classList.remove('text-warning', 'text-success');
+            statusText.classList.add('text-danger');
+        } else if (latestWaterLevel > 1.5) {
+            statusText.innerText = 'เฝ้าระวัง';
+            statusText.classList.remove('text-danger', 'text-success');
+            statusText.classList.add('text-warning');
+        } else {
+            statusText.innerText = 'ปกติ';
+            statusText.classList.remove('text-danger', 'text-warning');
+            statusText.classList.add('text-success');
+        }
         renderWaterChart(chartLabels, chartData);
     } catch (error) {
         console.error("Dashboard Error:", error);

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Level Dashboard - Bootstrap 5</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- เพิ่มฟอนต์ Kanit -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f4f8;
+            font-family: 'Kanit', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #334155;
+        }
+
+        .glass-card {
+            background: white;
+            border-radius: 2.5rem;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            margin-bottom: 1.5rem;
+        }
+
+        .water-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #4ade80 0%, #22c55e 100%);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            box-shadow: 0 15px 35px rgba(34, 197, 94, 0.3);
+        }
+
+        .prediction-banner {
+            background-color: #0d6efd;
+            border-radius: 1.5rem;
+            color: white;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .nav-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #eee;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .nav-item {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.7rem;
+            text-decoration: none;
+        }
+
+        .nav-item.active {
+            color: #0d6efd;
+        }
+
+        .water-chart-container {
+            height: 250px;
+        }
+    </style>
+</head>
+
+<body class="pb-5">
+
+    <div class="container py-4" style="max-width: 500px;">
+
+        <div class="text-center mb-4">
+            <h2 class="fw-bold mb-0">แผนภาพระดับน้ำ</h2>
+            <small class="text-muted">ข้อมูลระดับน้ำ</small>
+        </div>
+
+        <div class="card glass-card p-4 text-center">
+            <div class="water-circle mb-4">
+                <small class="opacity-75">ระดับน้ำ</small>
+                <h1 class="display-4 fw-bold m-0" id="current-water-level">--</h1>
+                <span>เมตร</span>
+            </div>
+            <h2 class="fw-bold" id="status-text">กำลังโหลด...</h2>
+            <p class="text-muted small" id="last-update">อัปเดต: --</p>
+        </div>
+
+        <div class="card glass-card p-3">
+            <div class="d-flex align-items-center text-primary fw-bold mb-3 px-2">
+                <i class="far fa-check-circle me-2"></i> แนวโน้มระดับน้ำ (ข้อมูลจริง)
+            </div>
+            <div class="water-chart-container">
+                <canvas id="waterChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card glass-card p-4 d-flex flex-row justify-content-between align-items-center">
+            <div>
+                <div class="fw-bold">ปริมาณน้ำฝน (ต.แม่แรม)</div>
+                <div class="text-muted small" id="rain-update">อัปเดตล่าสุด: 23:00 น.</div>
+            </div>
+            <div class="text-end">
+                <div class="h2 fw-black text-primary mb-0" id="rain-value">35.1 <small class="fs-6">mm</small></div>
+                <div class="text-info small fw-bold">ปริมาณน้ำฝนสะสม</div>
+            </div>
+        </div>
+
+        <div class="prediction-banner mb-4">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <small class="opacity-75"><i class="fas fa-bolt me-1"></i> การคาดการณ์</small>
+                    <h4 class="fw-bold mt-1">คาดว่าจะเพิ่มขึ้น</h4>
+                    <div class="small opacity-75">คาดว่าจะสูงถึง 3.10 เมตรภายในเวลา 22:00 น.</div>
+                </div>
+                <div class="fs-2"><i class="fas fa-water opacity-50"></i></div>
+            </div>
+        </div>
+
+        <div class="card glass-card p-4 mb-5">
+            <div class="d-flex justify-content-between small fw-bold text-muted mb-4 text-uppercase">
+                <span>Next 5 Days</span>
+                <span class="text-primary">Forecast</span>
+            </div>
+            <div class="d-flex justify-content-between text-center" id="forecast-days">
+                <!-- จะถูกเติมด้วย JS -->
+            </div>
+        </div>
+
+    </div>
+
+    <div class="nav-bottom">
+        <a href="#" class="nav-item active">
+            <i class="fas fa-home fs-4 d-block mb-1"></i>
+            <span>หน้าหลัก</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-chart-bar fs-4 d-block mb-1"></i>
+            <span>ข้อมูลย้อนหลัง</span>
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="home.js"></script>
+</body>
+
+</html>

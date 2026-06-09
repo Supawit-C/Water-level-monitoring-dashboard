@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แผงควบคุมเจ้าหน้าที่ - Water Level Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand: #0d6efd;
+            --bg: #f0f4f8;
+        }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'Kanit', 'Segoe UI', Tahoma, sans-serif;
+            color: #334155;
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
+            background: #fff;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 1rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0 0.5rem 1.25rem;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #3b82f6, #0d6efd);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font-size: 1.2rem;
+        }
+
+        .side-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0.85rem;
+            border-radius: 0.85rem;
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            transition: all 0.15s;
+        }
+
+        .side-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .side-link:hover {
+            background: #f1f5f9;
+            color: #334155;
+        }
+
+        .side-link.active {
+            background: var(--brand);
+            color: #fff;
+            box-shadow: 0 8px 18px rgba(13, 110, 253, 0.3);
+        }
+
+        .complaint-btn {
+            margin-top: auto;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+            border: none;
+            border-radius: 1.5rem;
+            padding: 0.85rem;
+            font-weight: 700;
+            box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        /* ===== Main ===== */
+        .main {
+            margin-left: 250px;
+            padding: 1.5rem 2rem;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 420px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            border: none;
+            background: #fff;
+            border-radius: 2rem;
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .icon-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #fff;
+            border: none;
+            color: #64748b;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: #fff;
+            border-radius: 2rem;
+            padding: 0.3rem 0.9rem 0.3rem 0.3rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        .profile .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #0d6efd);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+        }
+
+        .glass-card {
+            background: #fff;
+            border-radius: 1.75rem;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        }
+
+        /* ===== Gauge ===== */
+        .gauge {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+        }
+
+        .gauge::after {
+            content: '';
+            position: absolute;
+            inset: 18px;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        .gauge-inner {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .gauge-inner .val {
+            font-size: 2.1rem;
+            font-weight: 700;
+        }
+
+        .gauge-inner .unit {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .badge-soft {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.35rem 0.75rem;
+            border-radius: 1rem;
+        }
+
+        .badge-ok {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .badge-warn {
+            background: #fef9c3;
+            color: #ca8a04;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        /* ===== CCTV ===== */
+        .cctv {
+            position: relative;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            height: 190px;
+        }
+
+        .cctv img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .live-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(220, 38, 38, 0.9);
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.25rem 0.6rem;
+            border-radius: 1rem;
+        }
+
+        .live-badge .dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            background: #fff;
+            border-radius: 50%;
+            margin-right: 4px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.2; }
+        }
+
+        .cctv-caption {
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(6px);
+            border-radius: 1rem;
+            padding: 0.6rem 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* ===== Download report ===== */
+        .report-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 0.7rem 0.9rem;
+            margin-bottom: 0.65rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .report-row:hover,
+        .report-row.active {
+            border-color: var(--brand);
+            background: #eff6ff;
+        }
+
+        .download-btn {
+            width: 100%;
+            border: none;
+            border-radius: 1rem;
+            background: var(--brand);
+            color: #fff;
+            font-weight: 700;
+            padding: 0.75rem;
+        }
+
+        .chart-box {
+            height: 280px;
+        }
+
+        @media (max-width: 991px) {
+            .sidebar { transform: translateX(-100%); transition: transform .2s; z-index: 1050; }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .menu-toggle { display: inline-flex !important; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fas fa-water"></i></div>
+            <div>
+                <div class="fw-bold" style="font-size:0.95rem;line-height:1.1">ระบบเฝ้าระวังระดับน้ำ</div>
+                <small class="text-muted">ตำบลแม่แรม</small>
+            </div>
+        </div>
+
+        <nav>
+            <a href="#" class="side-link active"><i class="fas fa-table-columns"></i> แผงหลัก</a>
+            <a href="#" class="side-link"><i class="fas fa-video"></i> กล้อง CCTV</a>
+            <a href="history.html" class="side-link"><i class="fas fa-clock-rotate-left"></i> รายงานย้อนหลัง</a>
+            <a href="#" class="side-link"><i class="fas fa-gear"></i> ตั้งค่าระบบ</a>
+        </nav>
+
+        <button class="complaint-btn"><i class="fas fa-paper-plane me-1"></i> ส่งเรื่องร้องเรียน</button>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <!-- Topbar -->
+        <div class="topbar">
+            <button class="icon-btn menu-toggle d-none" id="menuToggle"><i class="fas fa-bars"></i></button>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="ค้นหาสถานี / รายงาน...">
+            </div>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <button class="icon-btn position-relative">
+                    <i class="fas fa-bell"></i>
+                    <span class="position-absolute top-0 end-0 bg-danger rounded-circle" style="width:9px;height:9px"></span>
+                </button>
+                <button class="icon-btn"><i class="fas fa-gear"></i></button>
+                <div class="profile">
+                    <div class="avatar">จ</div>
+                    <div class="small fw-bold d-none d-md-block">เจ้าหน้าที่</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page header -->
+        <div class="d-flex justify-content-between align-items-end flex-wrap mb-3">
+            <div>
+                <small class="text-muted">แผงควบคุม</small>
+                <h2 class="fw-bold mb-0">แผงควบคุมหลัก</h2>
+            </div>
+            <div class="text-success small fw-bold">
+                <i class="fas fa-circle" style="font-size:0.5rem"></i>
+                <span id="last-update">ข้อมูลล่าสุด: -- น.</span>
+            </div>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- Left column -->
+            <div class="col-lg-8">
+                <div class="row g-4 mb-1">
+                    <!-- Gauge 1 -->
+                    <div class="col-md-6">
+                        <div class="card glass-card p-4 h-100">
+                            <div class="d-flex justify-content-between mb-2">
+                                <small class="text-muted fw-bold">สถานีตรวจวัด</small>
+                                <span class="badge-soft" id="g1-badge">--</span>
+                            </div>
+                            <div class="gauge my-3" id="gauge1">
+                                <div class="gauge-inner">
+                                    <div class="val" id="g1-val">--</div>
+                                    <div class="unit">เมตร</div>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <div class="fw-bold">สะพานหมู่ 2</div>
+                                <small class="text-muted" id="g1-desc">ค่าเฉลี่ยทั้งวัน</small>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Gauge 2 -->
+                    <div class="col-md-6">
+                        <div class="card glass-card p-4 h-100">
+                            <div class="d-flex justify-content-between mb-2">
+                                <small class="text-muted fw-bold">สถานีตรวจวัด</small>
+                                <span class="badge-soft" id="g2-badge">--</span>
+                            </div>
+                            <div class="gauge my-3" id="gauge2">
+                                <div class="gauge-inner">
+                                    <div class="val" id="g2-val">--</div>
+                                    <div class="unit">เมตร</div>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <div class="fw-bold">ฝายน้ำล้น</div>
+                                <small class="text-muted" id="g2-desc">ระดับน้ำสูงสุดวันนี้</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart -->
+                <div class="card glass-card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="fw-bold">สถิติน้ำย้อนหลัง</span>
+                        <small class="text-muted">ระดับน้ำราย 24 ชั่วโมง</small>
+                    </div>
+                    <div class="chart-box">
+                        <canvas id="staffChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right column -->
+            <div class="col-lg-4">
+                <!-- CCTV -->
+                <div class="card glass-card p-3 mb-4">
+                    <div class="cctv">
+                        <img src="https://images.unsplash.com/photo-1467890947394-8171244e5410?auto=format&fit=crop&w=800&q=60" alt="กล้อง CCTV">
+                        <span class="live-badge"><span class="dot"></span>LIVE-REC</span>
+                        <div class="cctv-caption">
+                            <div class="small">
+                                <div class="fw-bold">ภาพกล้องกำลังถ่ายทอดสด</div>
+                                <span class="text-muted">จุดเฝ้าระวัง ฝายน้ำล้น</span>
+                            </div>
+                            <button class="icon-btn"><i class="fas fa-expand"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Download report -->
+                <div class="card glass-card p-4">
+                    <div class="fw-bold mb-1">ดาวน์โหลดรายงาน</div>
+                    <small class="text-muted d-block mb-3">เลือกรูปแบบรายงานที่ต้องการ</small>
+                    <div class="report-row active" data-type="daily">
+                        <i class="fas fa-calendar-day text-primary"></i> รายวัน
+                    </div>
+                    <div class="report-row" data-type="weekly">
+                        <i class="fas fa-calendar-week text-primary"></i> รายสัปดาห์
+                    </div>
+                    <div class="report-row" data-type="yearly">
+                        <i class="fas fa-calendar text-primary"></i> รายปี
+                    </div>
+                    <button class="download-btn mt-2" id="downloadBtn">
+                        <i class="fas fa-download me-1"></i> ดาวน์โหลด
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="staff.js"></script>
+</body>
+
+</html>

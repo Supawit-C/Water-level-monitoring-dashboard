@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แผงควบคุมเจ้าหน้าที่ - Water Level Dashboard</title>
+    <title>กล้อง CCTV - แผงควบคุมเจ้าหน้าที่</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;700&display=swap" rel="stylesheet">
@@ -166,70 +165,12 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
         }
 
-        /* ===== Gauge ===== */
-        .gauge {
-            position: relative;
-            width: 160px;
-            height: 160px;
-            margin: 0 auto;
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
-        }
-
-        .gauge::after {
-            content: '';
-            position: absolute;
-            inset: 18px;
-            border-radius: 50%;
-            background: #fff;
-        }
-
-        .gauge-inner {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            line-height: 1.1;
-        }
-
-        .gauge-inner .val {
-            font-size: 2.1rem;
-            font-weight: 700;
-        }
-
-        .gauge-inner .unit {
-            font-size: 0.8rem;
-            color: #94a3b8;
-        }
-
-        .badge-soft {
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 0.35rem 0.75rem;
-            border-radius: 1rem;
-        }
-
-        .badge-ok {
-            background: #dcfce7;
-            color: #16a34a;
-        }
-
-        .badge-warn {
-            background: #fef9c3;
-            color: #ca8a04;
-        }
-
-        .badge-danger {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-
         /* ===== CCTV ===== */
         .cctv {
             position: relative;
             border-radius: 1.5rem;
             overflow: hidden;
-            height: 190px;
+            height: 250px;
         }
 
         .cctv img {
@@ -248,6 +189,7 @@
             font-weight: 700;
             padding: 0.25rem 0.6rem;
             border-radius: 1rem;
+            z-index: 2;
         }
 
         .live-badge .dot {
@@ -264,51 +206,26 @@
             50% { opacity: 0.2; }
         }
 
-        .cctv-caption {
+        .cctv-btn {
             position: absolute;
-            left: 12px;
-            right: 12px;
             bottom: 12px;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(6px);
-            border-radius: 1rem;
-            padding: 0.6rem 0.9rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* ===== Download report ===== */
-        .report-row {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            border: 1px solid #e5e7eb;
-            border-radius: 1rem;
-            padding: 0.7rem 0.9rem;
-            margin-bottom: 0.65rem;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .report-row:hover,
-        .report-row.active {
-            border-color: var(--brand);
-            background: #eff6ff;
-        }
-
-        .download-btn {
-            width: 100%;
-            border: none;
-            border-radius: 1rem;
-            background: var(--brand);
+            right: 12px;
+            width: 36px;
+            height: 36px;
+            background: rgba(0,0,0,0.6);
             color: #fff;
-            font-weight: 700;
-            padding: 0.75rem;
+            border: none;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s;
+            z-index: 2;
         }
 
-        .chart-box {
-            height: 280px;
+        .cctv-btn:hover {
+            background: rgba(0,0,0,0.8);
+            transform: scale(1.1);
         }
 
         @media (max-width: 991px) {
@@ -333,8 +250,8 @@
         </div>
 
         <nav>
-            <a href="staff.html" class="side-link active"><i class="fas fa-table-columns"></i> แผงหลัก</a>
-            <a href="staff-cctv.html" class="side-link"><i class="fas fa-video"></i> กล้อง CCTV</a>
+            <a href="staff.html" class="side-link"><i class="fas fa-table-columns"></i> แผงหลัก</a>
+            <a href="staff-cctv.html" class="side-link active"><i class="fas fa-video"></i> กล้อง CCTV</a>
             <a href="staff-history.html" class="side-link"><i class="fas fa-clock-rotate-left"></i> รายงานย้อนหลัง</a>
             <a href="staff-settings.html" class="side-link"><i class="fas fa-gear"></i> ตั้งค่าระบบ</a>
         </nav>
@@ -350,7 +267,7 @@
             <button class="icon-btn menu-toggle d-none" id="menuToggle"><i class="fas fa-bars"></i></button>
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="ค้นหาสถานี / รายงาน...">
+                <input type="text" placeholder="ค้นหากล้อง...">
             </div>
             <div class="ms-auto d-flex align-items-center gap-2">
                 <button class="icon-btn position-relative">
@@ -366,110 +283,87 @@
         </div>
 
         <!-- Page header -->
-        <div class="d-flex justify-content-between align-items-end flex-wrap mb-3">
+        <div class="d-flex justify-content-between align-items-end flex-wrap mb-4">
             <div>
-                <small class="text-muted">แผงควบคุม</small>
-                <h2 class="fw-bold mb-0">แผงควบคุมหลัก</h2>
+                <small class="text-muted">ระบบกล้อง</small>
+                <h2 class="fw-bold mb-0">กล้อง CCTV เรียลไทม์</h2>
             </div>
-            <div class="text-success small fw-bold">
-                <i class="fas fa-circle" style="font-size:0.5rem"></i>
-                <span id="last-update">ข้อมูลล่าสุด: -- น.</span>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary rounded-pill btn-sm"><i class="fas fa-border-all me-1"></i> มุมมองกริด</button>
             </div>
         </div>
 
         <div class="row g-4">
-
-            <!-- Left column -->
-            <div class="col-lg-8">
-                <div class="row g-3 mb-4" id="stations-container">
-                    <!-- สถานีทั้ง 4 จะถูกสร้างด้วย JavaScript -->
-                </div>
-
-
-            </div>
-
-            <!-- Right column -->
-            <div class="col-lg-4">
-                <!-- CCTV -->
-                <div class="card glass-card p-3 mb-4">
+            <!-- Camera 1 -->
+            <div class="col-md-6 col-lg-6">
+                <div class="card glass-card p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="fw-bold"><i class="fas fa-video text-primary me-2"></i>สะพานหมู่ 2</div>
+                        <span class="badge bg-success rounded-pill"><span class="spinner-grow spinner-grow-sm me-1" style="width: 10px; height: 10px;" role="status" aria-hidden="true"></span> ออนไลน์</span>
+                    </div>
                     <div class="cctv">
-                        <img src="https://images.unsplash.com/photo-1467890947394-8171244e5410?auto=format&fit=crop&w=800&q=60" alt="กล้อง CCTV">
+                        <img src="https://images.unsplash.com/photo-1467890947394-8171244e5410?auto=format&fit=crop&w=800&q=80" alt="กล้อง CCTV 1">
                         <span class="live-badge"><span class="dot"></span>LIVE-REC</span>
-                        <div class="cctv-caption">
-                            <div class="small">
-                                <div class="fw-bold">ภาพกล้องกำลังถ่ายทอดสด</div>
-                                <span class="text-muted">จุดเฝ้าระวัง ฝายน้ำล้น</span>
-                            </div>
-                            <button class="icon-btn"><i class="fas fa-expand"></i></button>
+                        <button class="cctv-btn"><i class="fas fa-expand"></i></button>
+                    </div>
+                </div>
+            </div>
+            <!-- Camera 2 -->
+            <div class="col-md-6 col-lg-6">
+                <div class="card glass-card p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="fw-bold"><i class="fas fa-video text-primary me-2"></i>ฝายน้ำล้น</div>
+                        <span class="badge bg-success rounded-pill"><span class="spinner-grow spinner-grow-sm me-1" style="width: 10px; height: 10px;" role="status" aria-hidden="true"></span> ออนไลน์</span>
+                    </div>
+                    <div class="cctv">
+                        <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80" alt="กล้อง CCTV 2">
+                        <span class="live-badge"><span class="dot"></span>LIVE-REC</span>
+                        <button class="cctv-btn"><i class="fas fa-expand"></i></button>
+                    </div>
+                </div>
+            </div>
+            <!-- Camera 3 -->
+            <div class="col-md-6 col-lg-6">
+                <div class="card glass-card p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="fw-bold"><i class="fas fa-video text-primary me-2"></i>ปลายน้ำหมู่ 4</div>
+                        <span class="badge bg-success rounded-pill"><span class="spinner-grow spinner-grow-sm me-1" style="width: 10px; height: 10px;" role="status" aria-hidden="true"></span> ออนไลน์</span>
+                    </div>
+                    <div class="cctv">
+                        <img src="https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=800&q=80" alt="กล้อง CCTV 3">
+                        <span class="live-badge"><span class="dot"></span>LIVE-REC</span>
+                        <button class="cctv-btn"><i class="fas fa-expand"></i></button>
+                    </div>
+                </div>
+            </div>
+            <!-- Camera 4 -->
+            <div class="col-md-6 col-lg-6">
+                <div class="card glass-card p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="fw-bold"><i class="fas fa-video text-secondary me-2"></i>อ่างเก็บน้ำ</div>
+                        <span class="badge bg-secondary rounded-pill">ออฟไลน์</span>
+                    </div>
+                    <div class="cctv d-flex align-items-center justify-content-center bg-dark">
+                        <div class="text-white text-center">
+                            <i class="fas fa-video-slash fa-3x mb-2 text-secondary"></i>
+                            <p class="mb-0 text-muted">ขาดการเชื่อมต่อสัญญาณ</p>
                         </div>
                     </div>
                 </div>
-
-                <!-- Download report -->
-                <div class="card glass-card p-4">
-                    <div class="fw-bold mb-1">ดาวน์โหลดรายงาน</div>
-                    <small class="text-muted d-block mb-3">เลือกรูปแบบรายงานที่ต้องการ</small>
-                    <div class="report-row active" data-type="daily">
-                        <i class="fas fa-calendar-day text-primary"></i> รายวัน
-                    </div>
-                    <div class="report-row" data-type="weekly">
-                        <i class="fas fa-calendar-week text-primary"></i> รายสัปดาห์
-                    </div>
-                    <div class="report-row" data-type="yearly">
-                        <i class="fas fa-calendar text-primary"></i> รายปี
-                    </div>
-                    <button class="download-btn mt-2" id="downloadBtn">
-                        <i class="fas fa-download me-1"></i> ดาวน์โหลด
-                    </button>
-                </div>
             </div>
-
         </div>
+
     </main>
 
-    <!-- Details Modal -->
-    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0" style="border-radius: 1.5rem; box-shadow: 0 15px 35px rgba(0,0,0,0.1);">
-          <div class="modal-header border-0 pb-0">
-            <h5 class="modal-title fw-bold" id="detailsModalLabel">รายละเอียดระดับน้ำวันนี้</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <div class="row g-3 text-center mt-1 mb-3">
-                <div class="col-6">
-                    <div class="p-3 bg-light" style="border-radius: 1rem;">
-                        <small class="text-muted d-block mb-1">ค่าเฉลี่ยทั้งวัน</small>
-                        <h3 class="fw-bold text-primary mb-0" id="modal-avg">--</h3>
-                        <small>เมตร</small>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="p-3 bg-light" style="border-radius: 1rem;">
-                        <small class="text-muted d-block mb-1">ระดับน้ำสูงสุด</small>
-                        <h3 class="fw-bold text-danger mb-0" id="modal-max">--</h3>
-                        <small>เมตร</small>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="mt-4 border-top pt-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="fw-bold text-dark">สถิติน้ำย้อนหลัง</span>
-                    <small class="text-muted">ราย 24 ชั่วโมง</small>
-                </div>
-                <div class="chart-box" style="height: 250px;">
-                    <canvas id="staffChart"></canvas>
-                </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="staff.js"></script>
+    <script>
+        // Mobile sidebar toggle
+        const menuToggle = document.getElementById('menuToggle');
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('open');
+            });
+        }
+    </script>
 </body>
-
 </html>

@@ -41,18 +41,56 @@ async function loadStaffDashboard() {
         const labels = [];
         const data = [];
         let lastTime = '--:--';
+        let latestVal = 0;
         for (let i = 2; i <= 25; i++) {
             const v = parseFloat(lastRow[i]);
             if (!isNaN(v)) {
                 labels.push(header[i] || `${i - 2}:00`);
                 data.push(v);
                 lastTime = header[i] || lastTime;
+                latestVal = v;
             }
         }
 
-        // เกจ 1 = ค่าเฉลี่ย (สะพานหมู่ 2), เกจ 2 = สูงสุด (ฝายน้ำล้น)
-        setGauge('gauge1', 'g1-val', 'g1-badge', avgVal);
-        setGauge('gauge2', 'g2-val', 'g2-badge', maxVal);
+        // สถานีจำลอง (Mock 4 สถานี) โดยสถานีที่ 1 ดึงข้อมูลจริง
+        const stations = [
+            { id: 1, name: 'สะพานหมู่ 2', latest: latestVal, avg: avgVal, max: maxVal, isReal: true },
+            { id: 2, name: 'ฝายน้ำล้น', latest: 1.4, avg: 1.2, max: 1.6, isReal: false },
+            { id: 3, name: 'ปลายน้ำหมู่ 4', latest: 0.8, avg: 0.7, max: 1.1, isReal: false },
+            { id: 4, name: 'อ่างเก็บน้ำ', latest: 2.1, avg: 1.9, max: 2.3, isReal: false }
+        ];
+
+        const container = document.getElementById('stations-container');
+        if (container) {
+            container.innerHTML = '';
+            stations.forEach(st => {
+                const stHtml = `
+                    <div class="col-md-6 col-lg-6">
+                        <div class="card glass-card p-3 h-100 d-flex flex-column" style="transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted fw-bold">${st.name} ${st.isReal ? '' : '<span class="text-warning">(Mock)</span>'}</small>
+                                <span class="badge-soft" id="g${st.id}-badge">--</span>
+                            </div>
+                            <div class="gauge my-2" id="gauge${st.id}" style="width: 130px; height: 130px;">
+                                <div class="gauge-inner">
+                                    <div class="val" id="g${st.id}-val" style="font-size: 1.6rem;">--</div>
+                                    <div class="unit">เมตร</div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-auto pt-2">
+                                <div class="fw-bold mb-2">ระดับน้ำล่าสุด</div>
+                                <button class="btn btn-sm btn-light text-primary rounded-pill w-100 fw-bold" onclick="openStationModal('${st.name}', ${st.avg}, ${st.max})" style="background-color: #eff6ff; border: 1px solid #bfdbfe;">
+                                    <i class="fas fa-info-circle me-1"></i> ดูรายละเอียด
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', stHtml);
+                // เรนเดอร์เกจ
+                setGauge(`gauge${st.id}`, `g${st.id}-val`, `g${st.id}-badge`, st.latest);
+            });
+        }
 
         document.getElementById('last-update').innerText =
             `ข้อมูลล่าสุด: ${lastTime} น. (${dateStr})`;
@@ -165,6 +203,23 @@ if (menuToggle) {
         document.getElementById('sidebar').classList.toggle('open');
     });
 }
+
+// ===== ฟังก์ชันเปิด Modal ข้อมูลสถานี =====
+window.openStationModal = function(name, avg, max) {
+    document.getElementById('detailsModalLabel').innerText = `รายละเอียดระดับน้ำ: ${name}`;
+    document.getElementById('modal-avg').innerText = avg.toFixed(2);
+    document.getElementById('modal-max').innerText = max.toFixed(2);
+    const modalEl = document.getElementById('detailsModal');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.show();
+    
+    // อัปเดตกราฟเมื่อ Modal เปิดขึ้นเพื่อให้ขนาดถูกต้อง
+    setTimeout(() => {
+        if (staffChartInstance) {
+            staffChartInstance.resize();
+        }
+    }, 250);
+};
 
 loadStaffDashboard();
 setInterval(loadStaffDashboard, 300000);

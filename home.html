@@ -76,6 +76,14 @@
             height: 250px;
         }
 
+        .stat-card {
+            border-radius: 1.5rem;
+        }
+
+        .stat-card .h3 {
+            line-height: 1;
+        }
+
         .text-light-gray {
             color: #D9D9D9;
         }
@@ -101,9 +109,30 @@
             <p class="text-muted small" id="last-update">อัปเดต: --</p>
         </div>
 
+        <div class="row g-3 mb-3">
+            <div class="col-6">
+                <div class="card glass-card stat-card h-100 p-3 mb-0">
+                    <div class="d-flex align-items-center text-primary mb-2">
+                        <i class="fas fa-chart-line me-2"></i>
+                        <span class="small fw-bold">ค่าเฉลี่ย</span>
+                    </div>
+                    <div class="h3 fw-bold mb-0"><span id="avg-level">--</span> <small class="fs-6 text-muted">เมตร</small></div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card glass-card stat-card h-100 p-3 mb-0">
+                    <div class="d-flex align-items-center text-danger mb-2">
+                        <i class="fas fa-arrow-up-from-water-pump me-2"></i>
+                        <span class="small fw-bold">สูงสุดวันนี้</span>
+                    </div>
+                    <div class="h3 fw-bold mb-0"><span id="max-level">--</span> <small class="fs-6 text-muted">เมตร</small></div>
+                </div>
+            </div>
+        </div>
+
         <div class="card glass-card p-3">
             <div class="d-flex align-items-center text-primary fw-bold mb-3 px-2">
-                <i class="far fa-check-circle me-2"></i> แนวโน้มระดับน้ำ (ข้อมูลจริง)
+                <i class="far fa-check-circle me-2"></i> แนวโน้มระดับน้ำ (24 ชม.)
             </div>
             <div class="water-chart-container">
                 <canvas id="waterChart"></canvas>
@@ -152,6 +181,10 @@
         <a href="history.html" class="nav-item">
             <i class="fas fa-chart-bar fs-4 d-block mb-1"></i>
             <span>ข้อมูลย้อนหลัง</span>
+        </a>
+        <a href="staff.html" class="nav-item">
+            <i class="fas fa-user-shield fs-4 d-block mb-1"></i>
+            <span>เจ้าหน้าที่</span>
         </a>
     </div>
 
